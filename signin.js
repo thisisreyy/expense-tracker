@@ -80,9 +80,17 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error during registration:', error));
     });
 
+    // Switch to the register form
     document.getElementById('show-register').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('register-section').classList.remove('hidden');
+    });
+
+    // Switch back to the login form
+    document.getElementById('show-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('register-section').classList.add('hidden');
+        document.getElementById('login-section').classList.remove('hidden');
     });
 });
