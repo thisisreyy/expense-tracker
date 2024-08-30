@@ -66,3 +66,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script Loaded"); // Check if the script is running
+  
+    const sliderContainer = document.querySelector(".slider-container");
+    const banners = document.querySelectorAll(".slider-item");
+    console.log(sliderContainer, banners); // Check if elements are being selected correctly
+  
+    let currentIndex = 0;
+    const bannerCount = banners.length;
+  
+    function scrollToNextBanner() {
+      currentIndex = (currentIndex + 1) % bannerCount;
+      console.log(`Scrolling to banner index: ${currentIndex}`); // Log the current index
+      sliderContainer.scrollTo({
+        left: banners[currentIndex].offsetLeft,
+        behavior: "smooth"
+      });
+    }
+  
+    setInterval(scrollToNextBanner, 2000);
+  });
+  
+  

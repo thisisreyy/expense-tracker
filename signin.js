@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Handle login
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -9,15 +10,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(users => {
                 const user = users.find(user => user.email === email);
                 if (!user) {
-                    console.log('User not found');
                     document.getElementById('login-error').classList.remove('hidden');
                     document.getElementById('login-password-error').classList.add('hidden');
                 } else if (user.password !== password) {
-                    console.log('Password does not match');
                     document.getElementById('login-password-error').classList.remove('hidden');
                     document.getElementById('login-error').classList.add('hidden');
                 } else {
-                    console.log('Login successful');
                     localStorage.setItem('authenticated', 'true');  // Mark the user as authenticated
                     window.location.href = 'index.html';  // Redirect to index.html after successful login
                 }
@@ -25,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error fetching users:', error));
     });
 
+    // Handle registration
     document.getElementById('register-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('register-email').value.trim().toLowerCase();
@@ -34,11 +33,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const passwordError = document.getElementById('password-error');
         const confirmPasswordError = document.getElementById('confirm-password-error');
 
-        if (password !== confirmPassword) {
-            confirmPasswordError.classList.remove('hidden');
+        // Password validation regex
+        const passwordValidation = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+        // Check if the password meets the requirements
+        if (!passwordValidation.test(password)) {
+            passwordError.classList.remove('hidden');
+            passwordError.textContent = 'Password must be at least 8 characters long, include a capital letter, a number, and a special symbol.';
+            confirmPasswordError.classList.add('hidden');
             return;
         }
 
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            confirmPasswordError.classList.remove('hidden');
+            passwordError.classList.add('hidden');
+            return;
+        }
+
+        // If validation passes, proceed with registration
         fetch('http://localhost:8000/users.json')
             .then(response => response.json())
             .then(users => {
@@ -47,15 +60,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     passwordError.classList.remove('hidden');
                     return;
                 }
-                const newUser = { email: email, password: password };
-                users.push(newUser);
-
+                users.push({ email: email, password: password });
                 return fetch('http://localhost:8000/save-users.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(newUser)  // Send only the new user data
+                    body: JSON.stringify(users)
                 });
             })
             .then(response => {
